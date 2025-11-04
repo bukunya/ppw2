@@ -14,6 +14,7 @@
                     <div class="border rounded-xl border-white my-4 p-4 flex flex-row items-center justify-between">
                         <div>
                             <h5 class="text-4xl font-bold">{{ $job->title }}</h5>
+                            <p>Deskripsi: {{ $job->description }}</p>
                             <p>Perusahaan: {{ $job->company }}</p>
                             <p>Lokasi: {{ $job->location }}</p>
                             <p>Gaji: {{ 'Rp ' . number_format($job->salary, 0, ',', '.') }}</p>
