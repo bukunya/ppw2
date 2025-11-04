@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.table-bordered {
+    border-collapse: collapse;
+}
+.table-bordered th,
+.table-bordered td {
+    border: 1px solid #ccc;
+    padding: 8px;
+}

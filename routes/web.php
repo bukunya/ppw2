@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\JobController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,8 @@ Route::get('/dashboard', function () {
 Route::get('/admin/jobs', function () {
     return "Halaman Admin Jobs";
 })->middleware(['auth', 'isAdmin']);
+
+Route::resource('jobs', JobController::class)->middleware(['auth', 'isAdmin']);
 
 Route::get('/admin', function () {
     return "Halo Admin!";
