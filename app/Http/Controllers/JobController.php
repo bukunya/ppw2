@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\JobVacancy as Job;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Imports\JobsImport;
+use App\Exports\JobsTemplateExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class JobController extends Controller
 {
@@ -62,7 +65,8 @@ class JobController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $job = Job::findOrFail($id);
+        return view('jobs.show', compact('job'));
     }
 
     /**
@@ -124,5 +128,27 @@ class JobController extends Controller
         }
         $job->delete();
         return redirect()->route('jobs.index')->with('success', 'Lowongan berhasil dihapus');
+    }
+
+    /**
+     * Import jobs from an Excel file.
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv'
+        ]);
+
+        Excel::import(new JobsImport, $request->file('file'));
+
+        return back()->with('success', 'Data lowongan berhasil diimport');
+    }
+
+    /**
+     * Download import template.
+     */
+    public function downloadTemplate()
+    {
+        return Excel::download(new JobsTemplateExport, 'template_import_jobs.xlsx');
     }
 }
