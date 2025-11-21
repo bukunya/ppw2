@@ -7,6 +7,12 @@ use App\Models\Application;
 use Illuminate\Support\Facades\Auth;
 use App\Exports\ApplicationsExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Mail\JobAppliedMail;
+use Illuminate\Support\Facades\Mail;
+use App\Notifications\NewApplicationNotification;
+use App\Models\User;
+use App\Jobs\SendApplicationMailJob;
+use App\Mail\ApplicationStatusMail;
 
 class ApplicationController extends Controller
 {
@@ -38,14 +44,21 @@ class ApplicationController extends Controller
         try {
             $cvPath = $request->file('cv')->store('cvs', 'public');
 
-            Application::create([
+            $application = Application::create([
                 'user_id' => auth()->id(),
                 'job_id' => $jobId,
                 'cv' => $cvPath,
                 'status' => 'Pending',
             ]);
 
-            return back()->with('success', 'Lamaran berhasil dikirim!');
+            // Kirim email ke user via Queue
+            dispatch(new SendApplicationMailJob($application->job, auth()->user()));
+
+            // Kirim notifikasi ke Admin
+            $admin = User::where('role', 'admin')->first();
+            $admin->notify(new NewApplicationNotification($application));
+
+            return back()->with('success', 'Lamaran berhasil dikirim! Cek email Anda.');
         } catch (\Exception $e) {
             return back()->withErrors(['cv' => 'The cv failed to upload: ' . $e->getMessage()]);
         }
@@ -61,9 +74,15 @@ class ApplicationController extends Controller
         ]);
 
         $application = Application::findOrFail($id);
+        $oldStatus = $application->status;
         $application->update([
             'status' => $request->status
         ]);
+
+        // Kirim email jika status berubah
+        if ($oldStatus !== $request->status) {
+            Mail::to($application->user->email)->send(new ApplicationStatusMail($application, $request->status));
+        }
 
         return back()->with('success', 'Status lamaran berhasil diperbarui');
     }

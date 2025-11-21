@@ -10,7 +10,11 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $notifications = [];
+    if (auth()->user()->role === 'admin') {
+        $notifications = auth()->user()->notifications()->latest()->take(10)->get();
+    }
+    return view('dashboard', compact('notifications'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/admin/jobs', function () {
