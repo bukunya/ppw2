@@ -8,8 +8,6 @@ use App\Http\Controllers\Api\ApplicationApiController;
 
 Route::get('/status', fn() => ['status' => 'API is running']);
 
-Route::get('/public/jobs', [JobApiController::class, 'publicIndex']);
-
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -27,5 +25,4 @@ Route::middleware('auth:sanctum')->group(function () {
     // Applications
     Route::post('/jobs/{jobVacancy}/apply', [ApplicationApiController::class, 'store']);
     Route::get('/applications', [ApplicationApiController::class, 'index']);
-    Route::patch('/applications/{application}/status', [ApplicationApiController::class, 'updateStatus']);
 });

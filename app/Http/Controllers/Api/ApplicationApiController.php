@@ -38,19 +38,4 @@ class ApplicationApiController extends Controller
 
         return response()->json(['message' => 'Application submitted', 'application' => $app], 201);
     }
-
-    public function updateStatus(Request $req, Application $application)
-    {
-        if ($req->user()->role !== 'admin') {
-            return response()->json(['message' => 'Forbidden'], 403);
-        }
-
-        $req->validate([
-            'status' => 'required|in:Accepted,Rejected'
-        ]);
-
-        $application->update(['status' => $req->status]);
-
-        return response()->json(['message' => 'Status updated', 'application' => $application]);
-    }
 }
