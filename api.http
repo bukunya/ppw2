@@ -1,0 +1,48 @@
+@url = http://127.0.0.1:8000
+
+###
+
+GET {{url}}/api/status
+
+###
+
+POST {{url}}/api/register
+Content-Type: application/json
+
+{
+  "name": "Afif2",
+  "email": "me2@afif.dev",
+  "password": "123456"
+}
+
+###
+
+POST {{url}}/api/login
+Content-Type: application/json
+
+{
+  "email": "me2@afif.dev",
+  "password": "123456"
+}
+
+###
+
+@token = 3|V7IIkJ5KoQFddUw2YFpRfYh7i30gm4Sz8xAP5ogrd0fb6dd0
+
+###
+
+GET {{url}}/api/jobs
+Authorization: Bearer {{token}}
+
+###
+
+POST {{url}}/api/jobs/3/apply
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+
+------WebKitFormBoundary
+Content-Disposition: form-data; name="cv"; filename="file.pdf"
+Content-Type: application/pdf
+
+< /home/afif/laravel/breeze/file.pdf
+------WebKitFormBoundary--
