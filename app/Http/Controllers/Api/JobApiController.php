@@ -43,6 +43,14 @@ class JobApiController extends Controller
             });
         }
 
+        if ($req->filled('company')) {
+            $q->where('company', 'like', '%' . $req->company . '%');
+        }
+
+        if ($req->filled('location')) {
+            $q->where('location', 'like', '%' . $req->location . '%');
+        }
+
         $jobs = $q->orderBy('created_at', 'desc')->paginate($req->get('per_page', 10));
 
         return response()->json($jobs);
@@ -100,5 +108,12 @@ class JobApiController extends Controller
         $jobVacancy->delete();
 
         return response()->json(['message' => 'Deleted']);
+    }
+
+    public function publicIndex()
+    {
+        $jobs = JobVacancy::orderBy('created_at', 'desc')->paginate(10);
+
+        return response()->json($jobs);
     }
 }
